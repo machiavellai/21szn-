@@ -3,14 +3,20 @@
 import InputComponent from "@/components/Navbar/FormElements/InputComponents";
 import SelectComponent from "@/components/Navbar/FormElements/SelectComponent";
 import TileComponent from "@/components/Navbar/FormElements/TileComponent";
+import ComponentLevelLoader from "@/components/Navbar/Loader/componentLevel";
+import Notification from "@/components/Navbar/Notifications";
+import { GlobalContext } from "@/context";
 import { addNewProduct } from "@/services/product";
+
 import {
   AvailableSizes,
   adminAddProductformControls,
   firebaseConfig,
   firebaseStorageURL,
 } from "@/utils";
+
 import { initializeApp } from "firebase/app";
+
 import {
   getDownloadURL,
   getStorage,
@@ -18,9 +24,12 @@ import {
   ref,
 } from "firebase/storage";
 import { get } from "mongoose";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
+
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app, firebaseStorageURL);
+import { toast } from "react-toastify";
 
 //create a unique file name for the image
 
@@ -69,12 +78,17 @@ const initialFormData = {
 export default function AdminAddNewProduct() {
   const [formData, setFormData] = useState(initialFormData);
 
+  const { componentLevelLoader, setComponentLevelLoader } =
+    useContext(GlobalContext);
+
+  const router = useRouter();
+
   async function handleImage(event) {
     const extractImageUrl = await helperForUPloadingImageToFirebase(
       event.target.files[0]
     );
 
-    console.log(extractImageUrl);
+    // console.log(extractImageUrl);
 
     if (extractImageUrl !== "") {
       setFormData({
@@ -102,15 +116,34 @@ export default function AdminAddNewProduct() {
   }
 
   async function handleAddProduct() {
+    setComponentLevelLoader({ loading: true, id: "" });
     const res = await addNewProduct(formData);
 
     console.log(res);
+
+    if (res.success) {
+      setComponentLevelLoader({ loading: true, id: "" });
+      toast.success(res.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setFormData(initialFormData);
+      setTimeout(() => {
+        router.push("/admin-view/all-products");
+      },1000);
+    } else {
+      toast.error(res.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setComponentLevelLoader({ loading: false, id: "" });
+      setFormData(initialFormData);
+    }
   }
 
   console.log(formData);
 
   return (
-    <div className="w-full mt-5 mr-0 mb-0 ml-0 relative">
+    <div className="w-full mtSS-5 mr-0 mb-0 ml-0 relative">
       <div className="flex flex-col items-start justify-start p-10 bg-white shadow-2xl rounded-xl relative">
         <div className="w-full mt-6 mr-0 ml-0 space-y-8">
           {/* this is the input file .... */}
@@ -165,10 +198,19 @@ export default function AdminAddNewProduct() {
             onClick={handleAddProduct}
             className="inline-flex w-full items-center justify-center bg-blue-800 px-6 py-4 text-lg text-white font-medium uppercase tracking-wide"
           >
-            Add product
+            {componentLevelLoader && componentLevelLoader.loading ? (
+              <ComponentLevelLoader
+                text={"Adding Products"}
+                color={"#ffffff"}
+                loading={componentLevelLoader && componentLevelLoader.loading}
+              />
+            ) : (
+              "Add Product"
+            )}
           </button>
         </div>
       </div>
+      <Notification />
     </div>
   );
 }

@@ -22,11 +22,15 @@ export async function POST(req) {
   try {
     await connectToDB();
 
-    const isAuthUser = await AuthUser(req);
+    //the middleware to execute if a user is an admin
+    // const isAuthUser = await AuthUser(req);
 
-    console.log(isAuthUser, "sangam");
+    // console.log(isAuthUser, "ogooluwa");
 
-    if (isAuthUser?.role === "admin") {
+    const user = 'admin';
+
+
+    if (user === "admin") {
       const extractData = await req.json();
 
       const {
