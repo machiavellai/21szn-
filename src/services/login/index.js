@@ -8,10 +8,15 @@ export const login = async (formData) => {
       body: JSON.stringify(formData),
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
     const data = await response.json();
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.log("Error in Login requets:", error);
+    throw error;
   }
 };

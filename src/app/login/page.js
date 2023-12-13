@@ -49,28 +49,37 @@ export default function Login() {
 
   async function handleLogin() {
     setComponentLevelLoader({ loading: true, id: "" });
+//made changes by applying try and catch to log the errors to the an exact pinpoint
+    try {
+      console.log("Before login API call. FormData:", formData);
+      const res = await login(formData);
+      console.log("After login API call. Response:", res);
 
-    const res = await login(formData);
-
-    console.log(res);
-
-    if (res.success) {
-      toast.success(res.message, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setIsAuthUser(true);
-      setUser(res?.finalData?.user);
-      setFormData(initialFormdata);
-      Cookies.set("token", res?.finalData?.token);
-      localStorage.setItem("user", JSON.stringify(res?.finalData?.user));
-      setComponentLevelLoader({ loading: false, id: "" });
-    } else {
-      toast.error(res.message, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setIsAuthUser(false);
+      if (res.success) {
+        toast.success(res.message, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setIsAuthUser(true);
+        setUser(res?.finalData?.user);
+        setFormData(initialFormdata);
+        Cookies.set("token", res?.finalData?.token);
+        localStorage.setItem("user", JSON.stringify(res?.finalData?.user));
+        setComponentLevelLoader({ loading: false, id: "" });
+      } else {
+        toast.error(res.message, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setIsAuthUser(false);
+        setComponentLevelLoader({ loading: false, id: "" });
+      }
+      // ... rest of your code
+    } catch (error) {
+      console.error("Error in handleLogin:", error);
+    } finally {
       setComponentLevelLoader({ loading: false, id: "" });
     }
+    // const res = await login(formData);
+    // console.log(res);
   }
 
   console.log(isAuthUser, user);
@@ -143,7 +152,3 @@ export default function Login() {
     </div>
   );
 }
-
-
-
-
