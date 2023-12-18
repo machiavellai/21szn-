@@ -20,3 +20,77 @@ export const addNewProduct = async (formData) => {
     console.log(error);
   }
 };
+
+//service to get the all-product on the admin view
+export const getAllAdminProducts = async () => {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/admin/all-products",
+      {
+        method: "GET",
+        cache: "no-store",
+      }
+    );
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//service to update a new product on the admin view
+
+export const updateAProduct = async (formData) => {
+  try {
+    const response = await fetch("/api/admin/update-product", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteAProduct = async (id) => {
+  try {
+    const response = await fetch(`/api/admin/delete-product?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const ProductByCategory = async (id) => {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/admin/product-by-category?id=${id}`,
+      {
+        method: "GET",
+      }
+    );
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

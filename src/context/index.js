@@ -13,6 +13,7 @@ export default function GlobalState({ children }) {
   });
   const [isAuthUser, setIsAuthUser] = useState(null);
   const [user, setUser] = useState(null);
+  const [currentUpdatedProduct, setCurrentUpdatedProduct] = useState(null);
 
   //after user has been logged in you will want the token to be stored on cookie to verify authentication
   useEffect(() => {
@@ -40,6 +41,8 @@ export default function GlobalState({ children }) {
         setComponentLevelLoader,
         pageLevelLoader,
         setPageLevelLoader,
+        currentUpdatedProduct,
+        setCurrentUpdatedProduct,
       }}
     >
       {children}

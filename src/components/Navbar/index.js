@@ -1,7 +1,7 @@
 "use client";
 import { GlobalContext } from "@/context";
 import { adminNavOptions, navOptions, styles } from "@/utils";
-import { Fragment, useContext } from "react";
+import { Fragment, useContext, useEffect } from "react";
 import CommonModel from "./CommonModel";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
@@ -50,13 +50,28 @@ export default function Navbar() {
   // working on state variable
 
   const { showNavModal, setShowNavModal } = useContext(GlobalContext);
-  const { user, setUser, isAuthUser, setIsAuthUser } =
-    useContext(GlobalContext);
+  const {
+    user,
+    setUser,
+    isAuthUser,
+    setIsAuthUser,
+    currentUpdatedProduct,
+    setCurrentUpdatedProduct,
+  } = useContext(GlobalContext);
 
   const router = useRouter();
   const pathName = usePathname();
 
-  console.log(pathName);
+  console.log(currentUpdatedProduct, "navbar");
+
+  //using useEffect to populate a empty for to add after leavign update product
+  useEffect(() => {
+    if (
+      pathName !== "/admin-view/add-products" &&
+      currentUpdatedProduct !== null
+    )
+      setCurrentUpdatedProduct(null);
+  }, [pathName]);
 
   function handleLogout() {
     setIsAuthUser(false);
@@ -105,7 +120,7 @@ export default function Navbar() {
             {user?.role === "admin" ? (
               isAdminView ? (
                 <button
-                  onClick={() => router.push("/admin-view")}
+                  onClick={() => router.push("/")}
                   className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white"
                 >
                   client View

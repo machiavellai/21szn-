@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
 
-// const configOptions = {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// };
-
 const connectToDB = async () => {
   const connectionUrl =
     "mongodb+srv://oghenevictor54p:123456782023@cluster0.9b9ob13.mongodb.net/";
