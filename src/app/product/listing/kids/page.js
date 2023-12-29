@@ -1,8 +1,8 @@
 import CommonListing from "@/components/Navbar/CommonListing";
-import { ProductByCategory } from "@/services/product";
+import { productByCategory } from "@/services/product";
 
-export default async function KidsAllProduct() {
-  const getAllProducts = await ProductByCategory("kids");
+export default async function kidsAllProducts() {
+  const getAllProducts = await productByCategory("kids");
 
   return <CommonListing data={getAllProducts && getAllProducts.data} />;
 }

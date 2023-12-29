@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 
 export const dynamic = "force-dynamic";
 
+//middleware for user authentication
+
 const AuthUser = async (req) => {
   const token = req.headers.get("Authorization")?.split(" ")[1];
 

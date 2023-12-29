@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useContext } from "react";
 import ComponentLevelLoader from "../../Loader/componentLevel";
 import { toast } from "react-toastify";
+import { addToCart } from "@/services/cart";
 
 //pass in item as a prop to the Product vutton so as to delete or updat one item as it's clicked
 export default function ProductButton({ item }) {
@@ -16,6 +17,7 @@ export default function ProductButton({ item }) {
     setCurrentUpdatedProduct,
     setComponentLevelLoader,
     componentLevelLoader,
+    user,
   } = useContext(GlobalContext);
 
   const router = useRouter();
@@ -40,6 +42,12 @@ export default function ProductButton({ item }) {
       });
       setComponentLevelLoader({ loading: false, id: "" });
     }
+  }
+
+  async function handleAddToCArt(getItem){
+    const response = await addToCart({productID : getItem._id, userID : user._id})
+
+    console.log(response);
   }
 
   return isAdminView ? (
@@ -74,7 +82,7 @@ export default function ProductButton({ item }) {
     </>
   ) : (
     <>
-      <button className="mt-1.5 w-full justify-center bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white">
+      <button onClick={()=>handleAddToCArt(item)} className="mt-1.5 w-full justify-center bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white">
         Add to Cart
       </button>
     </>
