@@ -11,17 +11,21 @@ export const addToCart = async (FormData) => {
       body: JSON.stringify(FormData),
     });
 
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log();
+    console.log("Fetch Error: ", error);
   }
 };
 
 //gettign the cart items by the ID
 export const getAllCartItems = async (id) => {
   try {
-    const response = await fetch(`/api/cart/all-cart-ites?id=${id}`, {
+    const response = await fetch(`/api/cart/all-cart-items?id=${id}`, {
       method: "GET",
       headers: {
         "content-type": "application/json",

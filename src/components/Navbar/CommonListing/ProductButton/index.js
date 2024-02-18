@@ -18,6 +18,8 @@ export default function ProductButton({ item }) {
     setComponentLevelLoader,
     componentLevelLoader,
     user,
+    showCartModal,
+    setShowCartModal,
   } = useContext(GlobalContext);
 
   const router = useRouter();
@@ -44,8 +46,30 @@ export default function ProductButton({ item }) {
     }
   }
 
-  async function handleAddToCArt(getItem){
-    const response = await addToCart({productID : getItem._id, userID : user._id})
+  //function to add to cart
+  async function handleAddToCArt(getItem) {
+    setComponentLevelLoader({ loading: true, id: getItem._id });
+
+    const response = await addToCart({
+      productID: getItem._id,
+      userID: user._id,
+    });
+
+    if (response.success) {
+      toast.success(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setComponentLevelLoader({ loading: false, id: "" });
+      setShowCartModal(true);
+    } else {
+      toast.error(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setComponentLevelLoader({ loading: false, id: "" });
+      setShowCartModal(true);
+    }
 
     console.log(response);
   }
@@ -82,8 +106,21 @@ export default function ProductButton({ item }) {
     </>
   ) : (
     <>
-      <button onClick={()=>handleAddToCArt(item)} className="mt-1.5 w-full justify-center bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white">
-        Add to Cart
+      <button
+        onClick={() => handleAddToCArt(item)}
+        className="mt-1.5 w-full justify-center bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white"
+      >
+        {componentLevelLoader &&
+        componentLevelLoader.loading &&
+        componentLevelLoader.id === item._id ? (
+          <ComponentLevelLoader
+            text={"Adding Prodcut to cart"}
+            color={"#ffffff"}
+            loading={componentLevelLoader && componentLevelLoader.loading}
+          />
+        ) : (
+          " Add to Cart"
+        )}
       </button>
     </>
   );

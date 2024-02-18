@@ -5,6 +5,7 @@ import { Fragment, useContext, useEffect } from "react";
 import CommonModel from "./CommonModel";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import CartModal from "../CartModal";
 
 // jjs for seperating a user authenticated or not
 
@@ -57,6 +58,8 @@ export default function Navbar() {
     setIsAuthUser,
     currentUpdatedProduct,
     setCurrentUpdatedProduct,
+    showCartModal,
+    setShowCartModal,
   } = useContext(GlobalContext);
 
   const router = useRouter();
@@ -105,10 +108,14 @@ export default function Navbar() {
                   className={
                     "mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white"
                   }
+                  onClick={() => router.push("/Account")}
                 >
                   Account
                 </button>
-                <button className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white">
+                <button
+                  className="mt-1.5 inline-block bg-black px-5 py-3 text-xs font-medium uppercase tracking-wide text-white"
+                  onClick={() => setShowCartModal(true)}
+                >
                   Cart
                 </button>
               </Fragment>
@@ -192,6 +199,7 @@ export default function Navbar() {
         show={showNavModal}
         setShow={setShowNavModal}
       />
+      {showCartModal && <CartModal />}
     </>
   );
 }

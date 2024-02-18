@@ -49,7 +49,7 @@ export default function Login() {
 
   async function handleLogin() {
     setComponentLevelLoader({ loading: true, id: "" });
-//made changes by applying try and catch to log the errors to the an exact pinpoint
+    //made changes by applying try and catch to log the errors to the an exact pinpoint
     try {
       console.log("Before login API call. FormData:", formData);
       const res = await login(formData);

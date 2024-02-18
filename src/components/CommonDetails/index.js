@@ -1,6 +1,47 @@
-"use client ";
+"use client";
+
+import { GlobalContext } from "@/context";
+import { useContext } from "react";
+import { toast } from "react-toastify";
+import ComponentLevelLoader from "../Navbar/Loader/componentLevel";
+import { addToCart } from "@/services/cart";
+import Notification from "../Navbar/Notifications";
 
 export default function CommonDetails({ item }) {
+  const {
+    user,
+    setComponentLevelLoader,
+    setShowCartModal,
+    componentLevelLoader,
+  } = useContext(GlobalContext);
+
+  async function handleAddToCart(getItem) {
+    //same functionality from add to cart
+
+    setComponentLevelLoader({ loading: true, id: "" });
+
+    const response = await addToCart({
+      productID: getItem._id,
+      userID: user._id,
+    });
+
+    if (response.success) {
+      toast.success(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setComponentLevelLoader({ loading: false, id: "" });
+      setShowCartModal(true);
+    } else {
+      toast.error(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      setComponentLevelLoader({ loading: false, id: "" });
+      setShowCartModal(true);
+    }
+  }
+
   return (
     <section className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 bg-white">
       <div className="container mx-auto px-4 bg-white">
@@ -69,10 +110,21 @@ export default function CommonDetails({ item }) {
                 ) : null} */}
               </div>
               <button
+                onClick={() => handleAddToCart(item)}
                 type="button"
                 className="mt-1.5 inline-block bg-black px-5 py-3 text-xs text-white font-medium tracking-wide rounded-lg"
               >
-                Add to Cart
+                {componentLevelLoader && componentLevelLoader.loading ? (
+                  <ComponentLevelLoader
+                    text={"Adding Prodcut to cart"}
+                    color={"#ffffff"}
+                    loading={
+                      componentLevelLoader && componentLevelLoader.loading
+                    }
+                  />
+                ) : (
+                  "Add to Cart"
+                )}
               </button>
             </div>
             <ul className=" mt-8 space-y-2">
@@ -101,6 +153,7 @@ export default function CommonDetails({ item }) {
           </div>
         </div>
       </div>
+      <Notification />
     </section>
   );
 }

@@ -29,12 +29,15 @@ export async function POST(req) {
           message: error.details[0].message,
         });
       }
-      const isCurrentCartItemAlreadyExists = await Cart.find({
+      const isCurrentCartItemAlreadyExists = await Cart.findOne({
         productID: productID,
         userID: userID,
       });
 
-      if (isCurrentCartItemAlreadyExists) {
+      if (
+        isCurrentCartItemAlreadyExists &&
+        isCurrentCartItemAlreadyExists.quantity > 0
+      ) {
         return NextResponse.json({
           success: false,
           message: "Product is already in Cart Add different product",
@@ -44,16 +47,15 @@ export async function POST(req) {
       const saveProductToCart = await Cart.create(data);
 
       // come to check on this section
-
       if (saveProductToCart) {
         return NextResponse.json({
-          success: false,
+          success: true,
           message: "Product is added to cart",
         });
       } else {
         return NextResponse.json({
           success: false,
-          message: "Failed to add prosuct to cart try again later",
+          message: "Failed to add product to cart try again later",
         });
       }
     } else {
@@ -63,10 +65,10 @@ export async function POST(req) {
       });
     }
   } catch (error) {
-    console.log(error);
+    console.log("Error adding to cart:", error);
     return NextResponse.json({
       success: false,
-      message: "Something went wrong ! Please try again later",
+      message: "Internal Server Error. Please try again later.",
     });
   }
 }
