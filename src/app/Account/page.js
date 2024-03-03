@@ -6,12 +6,14 @@ import Notification from "@/components/Navbar/Notifications";
 import { GlobalContext } from "@/context";
 import {
   addNewAddress,
+  deleteAddress,
   fetchAllAddresses,
   updateAddress,
 } from "@/services/address";
 import { addNewAddressFormControls } from "@/utils";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { PulseLoader } from "react-spinners";
 
 export default function Account() {
   const {
@@ -22,6 +24,8 @@ export default function Account() {
     setAddressFormData,
     componentLevelLoader,
     setComponentLevelLoader,
+    pageLevelLoader,
+    setPageLevelLoader,
   } = useContext(GlobalContext);
 
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -29,16 +33,24 @@ export default function Account() {
 
   //to fetch all addresses
   async function extractAllAdresses() {
+    setPageLevelLoader(true);
     const response = await fetchAllAddresses(user?._id);
     // console.log(response);
     if (response.success) {
+      setPageLevelLoader(false);
       setAddresses(response.data);
     }
     console.log(response);
   }
+  //
 
   async function handleAddOrUpdateAddress() {
     setComponentLevelLoader({ loading: true, id: "" });
+    console.log("Sending data:", {
+      ...addressFormData,
+      _id: currentEditedAddressId,
+    });
+
     const response =
       currentEditedAddressId !== null
         ? await updateAddress({
@@ -79,11 +91,10 @@ export default function Account() {
         address: "",
       });
     }
-
-    console.log(response);
   }
 
   function handleUpdateAddress(getCurrentAddress) {
+    console.log(getCurrentAddress);
     setShowAddressForm(true);
     setAddressFormData({
       fullName: getCurrentAddress.fullName,
@@ -94,6 +105,35 @@ export default function Account() {
     });
     setCurrentEditedAddressId(getCurrentAddress._id);
   }
+
+  async function handleDeleteAddress(getCurrentAddressID) {
+    setComponentLevelLoader({ loading: true, id: "getCurrentAddressID" });
+    const response = await deleteAddress(getCurrentAddressID);
+
+    if (response) {
+      setComponentLevelLoader({ loading: false, id: "" });
+      toast.success(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      extractAllAdresses();
+    } else {
+      toast.error(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  }
+
+  // function handleUpdateAddress(getCurrentAddress) {
+  //   setShowAddressForm(true);
+  //   setAddressFormData({
+  //     fullName: getCurrentAddress.fullName,
+  //     city: getCurrentAddress.city,
+  //     country: getCurrentAddress.country,
+  //     postalCode: getCurrentAddress.postalCode,
+  //     address: getCurrentAddress.address,
+  //   });
+  //   setCurrentEditedAddressId(getCurrentAddress._id);
+  // }
 
   useEffect(() => {
     if (user !== null) extractAllAdresses();
@@ -120,34 +160,57 @@ export default function Account() {
             </button>
             <div className=" mt-6">
               <h1 className=" font-bold text-lg ">Your Addresses : </h1>
-              <div className=" mt-4 flex flex-col gap-4">
-                {addresses && addresses.length ? (
-                  addresses.map((item) => (
-                    <div className="border p-6" key={item._id}>
-                      <p>Name: {item.fullName} </p>
-                      <p>Address: {item.address} </p>
-                      <p>City: {item.city} </p>
-                      <p>Country: {item.country} </p>
-                      <p>PostalCode: {item.postalCode} </p>
-                      <button
-                        onClick={() => handleUpdateAddress(item)}
-                        type="button"
-                        className=" mt-5 mr-5  inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide"
-                      >
-                        Update Address
-                      </button>
-                      <button
-                        type="button"
-                        className=" mt-5  inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide"
-                      >
-                        Delete Address
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p>No address found please add anew address below</p>
-                )}
-              </div>
+              {pageLevelLoader ? (
+                <PulseLoader
+                  color={"#025200"}
+                  loading={pageLevelLoader}
+                  size={15}
+                  data-testid="loader"
+                />
+              ) : (
+                <div className=" mt-4 flex flex-col gap-4">
+                  {addresses && addresses.length ? (
+                    addresses.map((item) => (
+                      <div className="border p-6" key={item._id}>
+                        <p>Name: {item.fullName} </p>
+                        <p>Address: {item.address} </p>
+                        <p>City: {item.city} </p>
+                        <p>Country: {item.country} </p>
+                        <p>PostalCode: {item.postalCode} </p>
+                        <button
+                          onClick={() => handleUpdateAddress(item)}
+                          type="button"
+                          className=" mt-5 mr-5  inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide"
+                        >
+                          Update Address
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAddress(item._id)}
+                          type="button"
+                          className=" mt-5  inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide"
+                        >
+                          {componentLevelLoader &&
+                          componentLevelLoader.loading &&
+                          componentLevelLoader.id === item._id ? (
+                            <ComponentLevelLoader
+                              text={"Deleting"}
+                              color={"#ffffff"}
+                              loading={
+                                componentLevelLoader &&
+                                componentLevelLoader.loading
+                              }
+                            />
+                          ) : (
+                            "Delete"
+                          )}
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No address found please add anew address below</p>
+                  )}
+                </div>
+              )}
             </div>
             <div className=" mt-5">
               <button

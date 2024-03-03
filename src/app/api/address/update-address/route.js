@@ -14,16 +14,16 @@ export async function PUT(req) {
     if (isAuthUser) {
       const data = await req.json();
 
-      const { id, fullname, city, address, country, postalCode } = data;
+      const { _id, fullName, city, address, country, postalCode } = data;
 
       const updateAddress = await Address.findOneAndUpdate(
         {
           _id: _id,
         },
-        { fullname, city, address, country, postalCode },
+        { fullName, city, address, country, postalCode },
         { new: true }
       );
-
+      console.log("updated address :",updateAddress);
       if (updateAddress) {
         return NextResponse.json({
           success: true,
@@ -42,9 +42,9 @@ export async function PUT(req) {
       });
     }
 
-    const data = await req.json();
+    // const data = await req.json();
 
-    const { id, fullname, city, address, country, postalCode } = data;
+    // const { id, fullname, city, address, country, postalCode } = data;
   } catch (error) {
     console.log(error);
     return NextResponse.json({

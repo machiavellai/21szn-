@@ -18,8 +18,7 @@ export const addNewAddress = async (FormData) => {
   }
 };
 
-
-// get all addressed from user   
+// get all addressed from user
 
 export const fetchAllAddresses = async (id) => {
   try {
@@ -48,6 +47,7 @@ export const updateAddress = async (FormData) => {
     });
 
     const data = await response.json();
+    console.log("Received data:", data);
     return data;
   } catch (error) {
     console.log(error);

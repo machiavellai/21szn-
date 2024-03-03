@@ -1,8 +1,34 @@
 "use client";
 import Cookies from "js-cookie";
+import { usePathname, useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
 export const GlobalContext = createContext(null);
+
+export const initialCheckoutFormData = {
+  shippingAddress: {},
+  paymentMethod: "",
+  totalPrice: 0,
+  isPaid: false,
+  paidAt: new Date(),
+  isProcessing: true,
+};
+
+const protectedRoutes = [
+  "/Cart",
+  "/checkout",
+  "/Account",
+  "/orders",
+  "/admin-view",
+  "/admin-view/add-products",
+  "/admin-view/all-products",
+];
+
+const protectedAdminRoutes = [
+  "/admin-view",
+  "/admin-view/add-products",
+  "/admin-view/all-products",
+];
 
 export default function GlobalState({ children }) {
   const [showNavModal, setShowNavModal] = useState(false);
@@ -25,18 +51,66 @@ export default function GlobalState({ children }) {
     address: "",
   });
 
+  const [checkoutFormData, setCheckoutFormData] = useState(
+    initialCheckoutFormData
+  );
+
+  const [allOrdersForUser, setAllOrderForUser] = useState([]);
+
+  const router = useRouter();
+  const pathName = usePathname();
+
   //after user has been logged in you will want the token to be stored on cookie to verify authentication
+
   useEffect(() => {
     console.log(Cookies.get("token"));
 
     if (Cookies.get("token") !== undefined) {
       setIsAuthUser(true);
       const userData = JSON.parse(localStorage.getItem("user")) || {};
+
+      //store the cart items in localStorage and extract
+
+      const getCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
       setUser(userData);
+      setCartItems(getCartItems);
     } else {
       setIsAuthUser(false);
+      setUser({}); //unauthenticated user
     }
   }, [Cookies]);
+
+  //condtion for unauthenticated user
+
+  useEffect(() => {
+    if (
+      user &&
+      Object.keys(user).length === 0 &&
+      protectedRoutes.indexOf(pathName) > -1
+    )
+      router.push("/login");
+  }, [user, pathName]);
+  useEffect(() => {
+    if (
+      user &&
+      Object.keys(user).length === 0 &&
+      protectedAdminRoutes.indexOf(pathName) > -1
+    )
+      router.push("/login");
+  }, [user, pathName]);
+
+  //condition for unauthorized user
+
+  useEffect(() => {
+    if (
+      user !== null &&
+      user &&
+      Object.keys(user).length > 0 &&
+      user?.role !== "admin" &&
+      protectedAdminRoutes.indexOf(pathName) > -1
+    )
+      router.push("/unauthorized-page");
+  }, [user, pathName]);
 
   return (
     <GlobalContext.Provider
@@ -61,6 +135,10 @@ export default function GlobalState({ children }) {
         setAddresses,
         addressFormData,
         setAddressFormData,
+        checkoutFormData,
+        setCheckoutFormData,
+        allOrdersForUser,
+        setAllOrderForUser,
       }}
     >
       {children}
