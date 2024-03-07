@@ -23,9 +23,28 @@ export default function CartPage() {
     const response = await getAllCartItems(user?._id);
 
     if (response.success) {
-      setCartItems(response.data);
+      const updatedData =
+        response.data && response.data.length
+          ? response.data.map((item) => ({
+              ...item,
+              productID: {
+                ...item.productID,
+                price:
+                  item.productID.onSale === "yes"
+                    ? parseInt(
+                        (
+                          item.productID.price -
+                          item.productID.price *
+                            (item.productID.priceDrop / 100)
+                        ).toFixed(2)
+                      )
+                    : item.productID.price,
+              },
+            }))
+          : [];
+      setCartItems(updatedData);
       setPageLevelLoader(false);
-      localStorage.setItem("cartItems", JSON.stringify(response.data));
+      localStorage.setItem("cartItems", JSON.stringify(updatedData));
     }
     console.log(response);
   }

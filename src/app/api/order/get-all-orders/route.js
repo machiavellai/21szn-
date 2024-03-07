@@ -1,6 +1,7 @@
 import connectToDB from "@/database";
 import AuthUser from "@/middleware/AuthUser";
 import Order from "@/models/order";
+import Product from "@/models/product";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +20,10 @@ export async function GET(req) {
       const ordersForUser = await Order.find({ user: id });
       console.log("Orders for user:", ordersForUser);
 
-      const extractAllOrders = await Order.find({ user: id }).populate(
-        "orderItems.product"
-      );
+      const extractAllOrders = await Order.find({ user: id }).populate({
+        path: "orderItems.product",
+        model: Product,
+      });
       console.log("Extracted Orders:", extractAllOrders);
 
       if (extractAllOrders) {

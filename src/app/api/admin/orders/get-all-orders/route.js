@@ -7,45 +7,38 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   try {
+    
     await connectToDB();
     const isAuthUser = await AuthUser(req);
 
-    if (isAuthUser) {
-      const { searchParams } = new URL(req.url);
-      const id = searchParams.get("id");
+    if (isAuthUser?.role === "admin") {
+      const getAllOrders = await Order.find({})
+        .populate("orderItems.product")
+        .populate("user");
 
-      if (!id)
-        return NextResponse.json({
-          sucess: false,
-          message: "ProductID is required ",
-        });
-
-      const extractOrderDetails = await Order.findById(id).populate(
-        "orderItems.product"
-      );
-      console.log(extractOrderDetails);
-
-      if (extractOrderDetails) {
+      if (getAllOrders) {
         return NextResponse.json({
           success: true,
-          data: extractOrderDetails,
+          data: getAllOrders,
         });
       } else {
         return NextResponse.json({
           success: false,
-          message: "failed to get order stails please try again",
+          message:
+            "Failed to fetch the orders! please try again after some time",
         });
       }
     } else {
       return NextResponse.json({
         success: false,
-        message: "You are not authnticated",
+        message: "You are not authenticated",
       });
     }
   } catch (error) {
+    console.log(error);
     return NextResponse.json({
       success: false,
-      message: "Internal Server Error. Please try again later.",
+      message: "Something went wrong ! Please try again later",
     });
   }
 }

@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <GlobalState>
           <Navbar />
-          <main className="flex min-h-screen flex-col mt-[79px]">
+          <main className=" bg-white flex min-h-screen flex-col mt-[79px]">
             {children}
           </main>
         </GlobalState>

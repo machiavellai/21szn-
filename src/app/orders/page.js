@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react";
 import { toast } from "react-toastify";
 import { PulseLoader } from "react-spinners";
 import Notification from "@/components/Navbar/Notifications";
+import { useRouter } from "next/navigation";
 
 export default function Orders() {
   const {
@@ -16,6 +17,7 @@ export default function Orders() {
     setAllOrderForUser,
   } = useContext(GlobalContext);
 
+  const router = useRouter();
   async function extractAllorders() {
     setPageLevelLoader(true);
 
@@ -23,8 +25,8 @@ export default function Orders() {
 
     if (response.success) {
       setPageLevelLoader(false);
-
       setAllOrderForUser(response.data);
+      console.log("Order Data:", response.data);
       toast.success(response.message, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -40,7 +42,11 @@ export default function Orders() {
     if (user !== null) extractAllorders();
   }, [user]);
 
-  console.log(allOrdersForUser);
+  console.log("All Orders:", allOrdersForUser);
+
+  allOrdersForUser.forEach((order) => {
+    console.log("Order Items:", order.orderItems);
+  });
 
   if (pageLevelLoader) {
     return (
@@ -56,7 +62,7 @@ export default function Orders() {
   }
 
   return (
-    <section className=" h-screen bg-gray-200">
+    <section >
       <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div className=" mt-8 max-w-screen-xl px-4 sm:px-6 lg:px-8">
           <div>
@@ -67,7 +73,7 @@ export default function Orders() {
                     {allOrdersForUser.map((item) => (
                       <li
                         key={item._id}
-                        className=" bg-white shadow p-5 flex flex-col space-y-3 py-6 text-left"
+                        className=" bg-gray-300 shadow p-5 flex flex-col space-y-3 py-6 text-left"
                       >
                         <div className="flex">
                           <h1 className=" font-bold text-lg mb-3 flex-1">
@@ -84,7 +90,7 @@ export default function Orders() {
                         </div>
                         <div className=" flex gap-2">
                           {item.orderItems.map((orderItem, index) => (
-                            <div key={index} className=" shrink-0">
+                            <div key={index} className="shrink-0">
                               {/* logging the Url of the image */}
                               {console.log(
                                 "Product Image URL:",
@@ -93,22 +99,24 @@ export default function Orders() {
                               <img
                                 alt="OrderItem"
                                 className="h-24 w-24 max-w-full rounded-lg object-cover"
-                                src={
-                                  orderItem &&
-                                  orderItem.product &&
-                                  orderItem.product.imageUrl
-                                }
+                                src={orderItem.product?.imageUrl}
+                                // orderItems &&
+                                // orderItems.product &&
+                                // orderItems.product.imageUrl
                               />
                             </div>
                           ))}
                         </div>
                         <div className=" flex gap-5">
                           <button className=" disabled:opacity-50  mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide">
-                            {item.isProccessing
+                            {item.isProcessing
                               ? "Order is Processing!"
                               : "Oder is Delivered!"}
                           </button>
-                          <button className=" disabled:opacity-50  mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide">
+                          <button
+                            onClick={() => router.push(`/orders/${item._id}`)}
+                            className="mt-5 mr-5 inline-block bg-black text-white px-5 py-3 text-xs font-medium uppercase rounded-md  tracking-wide"
+                          >
                             View Order Details
                           </button>
                         </div>

@@ -69,7 +69,7 @@ export default function checkout() {
           shippingAddress: getCheckoutFormData.shippingAddress,
           orderItems: cartItems.map((items) => ({
             qty: 1,
-            prouct: items.productID,
+            product: items.productID,
           })),
           paymentMethod: "Stripe",
           totalPrice: cartItems.reduce(
@@ -157,7 +157,7 @@ export default function checkout() {
   useEffect(() => {
     if (orderSuccess) {
       setTimeout(() => {
-         router.push("/orders");
+        router.push("/orders");
       }, [2000]);
     }
   }, [orderSuccess]);
