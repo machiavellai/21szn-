@@ -25,11 +25,10 @@ export const addNewProduct = async (formData) => {
 export const getAllAdminProducts = async () => {
   try {
     const response = await fetch(
-      "https://21szn.vercel.app/product/listing/all-products",
+      "http://localhost:3000/api/admin/all-products",
       {
         method: "GET",
         cache: "no-store",
-        
       }
     );
 
