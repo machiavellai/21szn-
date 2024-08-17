@@ -29,6 +29,7 @@ export const getAllAdminProducts = async () => {
       {
         method: "GET",
         cache: "no-store",
+        
       }
     );
 
