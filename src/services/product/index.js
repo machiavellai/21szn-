@@ -23,20 +23,38 @@ export const addNewProduct = async (formData) => {
 
 //service to get the all-product on the admin view
 export const getAllAdminProducts = async () => {
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // Log the API URL to ensure it's correctly set
+  
+  // console.log("API URL:", apiUrl);
+
+  // if (!apiUrl) {
+  //   console.error("NEXT_PUBLIC_API_URL is not defined");
+  //   return null;
+  // }
+
   try {
     const response = await fetch(
-      "https://localhost:3000/api/admin/all-products",
+      `${apiUrl}/api/admin/all-products`,
       {
         method: "GET",
         cache: "no-store",
       }
     );
 
-    const data = await response.json();
+    console.log("Response:", response);
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Data fetched:", data);
     return data;
   } catch (error) {
-    console.log(error);
+    console.log("Error fetching admin products:", error);
   }
 };
 
