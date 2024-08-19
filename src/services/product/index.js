@@ -27,7 +27,7 @@ export const getAllAdminProducts = async () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Log the API URL to ensure it's correctly set
-  
+
   // console.log("API URL:", apiUrl);
 
   // if (!apiUrl) {
@@ -98,16 +98,35 @@ export const deleteAProduct = async (id) => {
 };
 
 export const productByCategory = async (id) => {
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // Log the API URL to ensure it's correctly set
+
+  // console.log("API URL:", apiUrl);
+
+  // if (!apiUrl) {
+  //   console.error("NEXT_PUBLIC_API_URL is not defined");
+  //   return null;
+  // }
+
   try {
     const response = await fetch(
-      `http://localhost:3000/api/admin/product-by-category?id=${id}`,
+      `${apiUrl}/api/admin/product-by-category?id=${id}`,
       {
         method: "GET",
         cache: "no-store",
       }
     );
+    console.log("Response:", response);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const data = await response.json();
+    console.log("Data fetched:", data);
+
     // console.log(data);
     return data;
   } catch (error) {
@@ -116,15 +135,26 @@ export const productByCategory = async (id) => {
 };
 
 export const productById = async (id) => {
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   try {
     const response = await fetch(
-      `http://localhost:3000/api/admin/product-by-id?id=${id}`,
+      `${apiUrl}/api/admin/product-by-id?id=${id}`,
       {
         method: "GET",
         cache: "no-store",
       }
     );
+
+    console.log("Response:", response);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
+    console.log("Data fetched:", data);
     return data;
   } catch (error) {
     console.log(error);
